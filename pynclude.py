@@ -20,7 +20,7 @@ def extrac_mul_orders(content:list) -> list:
 
 
 def build_mul_comment(include_orders:list) -> str:
-    return f"   ; {', '.join(include_orders)}"
+    return f"   ; {', '.join(include_orders)}\n"
 
 
 def comment_with_order_values(folder:str) -> None:
@@ -58,7 +58,7 @@ def add_from_folder(folder:str) -> None:
         if 'mul' not in dat:
             add_include(folder, dat)
         else:
-            add_include(folder, dat)
+            add_include_mul(folder, dat)
 
 
 def read_file(file_path:str) -> list:
@@ -84,6 +84,27 @@ def add_include(folder:str, dat:str) -> None:
 
     else:
         write_file(path_dat_root, include)
+
+
+def add_include_mul(folder:str, dat:str) -> None:
+    path_dat_root = os.path.join(ROOT, dat)
+    include = f'#include {folder}/{dat}'
+
+    if os.path.isfile(path_dat_root):
+        content = read_file(path_dat_root)
+            
+        if include not in content:
+            content.insert(
+                0, 
+                f'{include}{comment_with_order_values(folder)}'
+                )
+            write_file(path_dat_root, content)
+
+    else:
+        write_file(
+            path_dat_root, 
+            f'{include}{comment_with_order_values(folder)}'
+            )
 
 
 def locate_include(content:list, target:str):
