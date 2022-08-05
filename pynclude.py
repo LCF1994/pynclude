@@ -19,8 +19,8 @@ def extrac_mul_orders(content:list) -> list:
     return order_list 
 
 
-def build_mul_comment(include_orders:list) -> str:
-    return f"   ; {', '.join(include_orders)}\n"
+def build_mul_comment(folder:str, include_orders:list) -> str:
+    return f"; Ordems no include {folder}: {', '.join(include_orders)}\n"
 
 
 def comment_with_order_values(folder:str) -> None:
@@ -29,7 +29,7 @@ def comment_with_order_values(folder:str) -> None:
         with open(file_path, 'r+') as f:
             content = f.readlines()
             order_values = extrac_mul_orders(content)
-            comment = build_mul_comment(order_values)
+            comment = build_mul_comment(folder, order_values)
             return comment
     except FileNotFoundError:
         print('mul not found')
@@ -58,6 +58,7 @@ def add_from_folder(folder:str) -> None:
         if 'mul' not in dat:
             add_include(folder, dat)
         else:
+            # add_include(folder, dat)
             add_include_mul(folder, dat)
 
 
@@ -88,7 +89,7 @@ def add_include(folder:str, dat:str) -> None:
 
 def add_include_mul(folder:str, dat:str) -> None:
     path_dat_root = os.path.join(ROOT, dat)
-    include = f'#include {folder}/{dat}'
+    include = f'#include {folder}/{dat}\n'
 
     if os.path.isfile(path_dat_root):
         content = read_file(path_dat_root)
@@ -96,7 +97,7 @@ def add_include_mul(folder:str, dat:str) -> None:
         if include not in content:
             content.insert(
                 0, 
-                f'{include}{comment_with_order_values(folder)}'
+                f'{comment_with_order_values(folder)}{include}'
                 )
             write_file(path_dat_root, content)
 
